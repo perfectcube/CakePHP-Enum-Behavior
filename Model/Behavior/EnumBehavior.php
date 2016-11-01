@@ -93,8 +93,9 @@ class EnumBehavior extends ModelBehavior {
 		$enums = $this->enumValues($Model);
 		if(array_key_exists($field, $enums)) {
 			$enum = $enums[$field];
-			if(array_key_exists($key, $enum))
+			if(array_key_exists($key, $enum)){
 				return $enum[$key];
+			}
 		}
 		return false;
 	}
@@ -109,8 +110,9 @@ class EnumBehavior extends ModelBehavior {
 		if(isset($this->settings[$Model->name])){
 			foreach($this->settings[$Model->name] as $field => $values){
 				if(!empty($values)){
-					foreach($values as $key => $value)
+					foreach($values as $key => $value){
 						$values[$key] =  __(Inflector::humanize($value));
+					}
 					$return[Inflector::pluralize(Inflector::variable($field))] = $values;
 				}
 			}
