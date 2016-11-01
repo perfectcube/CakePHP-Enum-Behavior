@@ -62,6 +62,7 @@ class EnumBehavior extends ModelBehavior {
 		$validation_requested = $this->haveValidate($values);
 		// If validation has been requested, true or false, we need to peel the actual values out of their secondary location in field_name[values] = array('field_value'=>'field_label') instead of looking for them in filed_name[field_value] = field_label
 		$field_values = ($validation_requested === true) ? $values['values'] : $values;
+		return $field_values;
 		
 	}
 
