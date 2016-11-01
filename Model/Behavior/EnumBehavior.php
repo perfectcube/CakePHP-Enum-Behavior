@@ -9,6 +9,19 @@
  *      'exemple_field' => array(1 => 'value_1', 'key' => 'value_2')
  *  )
  * );
+ * Or if you want to skip automatic validation of enumerated values
+ * $actsAs = array(
+ *  'CakePHP-Enum-Behavior.Enum' => array(
+ *      'exemple_field' => array(
+ *			'values' => array(1 => 'value_1', 'key' => 'value_2')
+ *			'validate' => false // boolean false || true. false will skip validation, 
+ *								// true will allow validation without having to switch 
+ *								// back to the terse field=>values configuration in 
+ *								// the example above.
+ *		)
+ *  )
+ * );
+ *
  * In your controller :
  * $this->set($this->{$this->ModelName}->enumValues());
  *
