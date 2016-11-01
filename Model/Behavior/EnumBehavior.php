@@ -117,7 +117,9 @@ class EnumBehavior extends ModelBehavior {
 		$return = array();
 		if(isset($this->settings[$Model->name])){
 			foreach($this->settings[$Model->name] as $field => $values){
+				Dev::speek(array($field=>$values));
 				$values = $this->peelValues($values);
+				Dev::speek($values);
 				if(!empty($values)){
 					foreach($values as $key => $value){
 						Dev::speek(array($key=>$value));
