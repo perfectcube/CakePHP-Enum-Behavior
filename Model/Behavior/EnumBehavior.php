@@ -33,38 +33,9 @@ class EnumBehavior extends ModelBehavior {
 		$this->settings[$Model->name] = $config;
 		$schema = $Model->schema();
 		foreach($config as $field => $values){
-			$baseRule = array(
-				/* All types to string conversion */
-				'rule' => array('inList', array_map(function($v){ return (string)$v; }, array_keys($values)), false), 
-				'message' => __('Please choose one of the following values : %s', join(', ', $this->__translate($values))),
-				'allowEmpty' => in_array(null, $values) || in_array('', $values),
-				'required' => false
-			);
-			if(
-				isset($schema[$field])
-				&& isset($schema[$field]['null']) 
-				&& !$schema[$field]['null']
-			){
-				$Model->validate[$field]['allowedValuesCreate'] = array_merge(
-					$baseRule,
-					array(
-						'required' => true,
-						'on' => 'create'
-					)
-				);
-				$Model->validate[$field]['allowedValuesUpdate'] = array_merge(
-					$baseRule,
-					array(
-						'on' => 'update'
-					)
-				);
-			}
-			else {
-				$Model->validate[$field]['allowedValues'] = $baseRule;
-			}
+			$this->attachValidation($Model,$schema,$field,$values);
 		}
 	}
-
 
 	/**
 	 * convert given $field $value (array value) to enum key (array key)
@@ -130,6 +101,45 @@ class EnumBehavior extends ModelBehavior {
 			$return[] = __(Inflector::humanize($value));
 		}
 		return $return;
+	}
+	
+	/**
+	 * Attaches validation rule inList: enum value required
+	 * @param object $Model Model using this behavior
+	 * @param array $schema the schema Model using this behavior
+	 * @param string $$field_name the enum field name as passed in at config time. see $actsAs in $this->setup() above
+	 * @param array $values the key enum value['label'] as passed in at 
+	 */
+	private function attachValidation(&$Model,$schema,$field_name,$values){
+		$baseRule = array(
+			/* All types to string conversion */
+			'rule' => array('inList', array_map(function($v){ return (string)$v; }, array_keys($values)), false), 
+			'message' => __('Please choose one of the following values : %s', join(', ', $this->__translate($values))),
+			'allowEmpty' => in_array(null, $values) || in_array('', $values),
+			'required' => false
+		);
+		if(
+			isset($schema[$field_name])
+			&& isset($schema[$field_name]['null']) 
+			&& !$schema[$field_name]['null']
+		){
+			$Model->validate[$field_name]['allowedValuesCreate'] = array_merge(
+				$baseRule,
+				array(
+					'required' => true,
+					'on' => 'create'
+				)
+			);
+			$Model->validate[$field_name]['allowedValuesUpdate'] = array_merge(
+				$baseRule,
+				array(
+					'on' => 'update'
+				)
+			);
+		}
+		else {
+			$Model->validate[$field_name]['allowedValues'] = $baseRule;
+		}
 	}
 
 }
