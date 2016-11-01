@@ -110,6 +110,7 @@ class EnumBehavior extends ModelBehavior {
 			foreach($this->settings[$Model->name] as $field => $values){
 				if(!empty($values)){
 					foreach($values as $key => $value){
+						Dev::speek(array($key=>$value));
 						$values[$key] =  __(Inflector::humanize($value));
 					}
 					$return[Inflector::pluralize(Inflector::variable($field))] = $values;
