@@ -46,7 +46,22 @@ class EnumBehavior extends ModelBehavior {
 		$this->settings[$Model->name] = $config;
 		$schema = $Model->schema();
 		foreach($config as $field => $values){
-			$this->attachValidation($Model,$schema,$field,$values);
+			$validation_requested = (
+				// the validate key exists in our incoming filed info
+				isset($values['validate']) 
+				&& isset($values['values']) 
+			) ? true : false;	
+			
+			// If validation has been requested, true or false, we need to peel the actual values out of their secondary location in field_name[values] = array('field_value'=>'field_label') instead of looking for them in filed_name[field_value] = field_label
+			$field_values = ($validation_requested === true) ? $values['values'] : $values;
+				
+			if($validation_requested){
+				// validation has been requested but the validate value is false; skip validation attachement
+				$need_validation = ($values['validate'] === true) ? true : false;
+				if($need_validation){
+					$this->attachValidation($Model,$schema,$field,$field_values);									
+				}
+			}
 		}
 	}
 
