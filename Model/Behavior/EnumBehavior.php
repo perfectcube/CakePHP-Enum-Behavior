@@ -46,15 +46,8 @@ class EnumBehavior extends ModelBehavior {
 		$this->settings[$Model->name] = $config;
 		$schema = $Model->schema();
 		foreach($config as $field => $values){
-			$validation_requested = (
-				// the validate key exists in our incoming filed info
-				isset($values['validate']) 
-				&& isset($values['values']) 
-			) ? true : false;	
-			
-			// If validation has been requested, true or false, we need to peel the actual values out of their secondary location in field_name[values] = array('field_value'=>'field_label') instead of looking for them in filed_name[field_value] = field_label
-			$field_values = ($validation_requested === true) ? $values['values'] : $values;
-				
+			$validation_requested = $this->haveValidate($values);
+			$field_values = $this->peelValues($values);
 			if($validation_requested){
 				// validation has been requested but the validate value is false; skip validation attachement
 				$need_validation = ($values['validate'] === true) ? true : false;
@@ -63,6 +56,22 @@ class EnumBehavior extends ModelBehavior {
 				}
 			}
 		}
+	}
+
+	private function peelValues($values){
+		$validation_requested = $this->haveValidate($values);
+		// If validation has been requested, true or false, we need to peel the actual values out of their secondary location in field_name[values] = array('field_value'=>'field_label') instead of looking for them in filed_name[field_value] = field_label
+		$field_values = ($validation_requested === true) ? $values['values'] : $values;
+		
+	}
+
+	private function haveValidate($values){
+		$validation_requested = (
+			// the validate key exists in our incoming filed info
+			isset($values['validate']) 
+			&& isset($values['values']) 
+		) ? true : false;	
+		return $validation_requested;
 	}
 
 	/**
@@ -108,6 +117,7 @@ class EnumBehavior extends ModelBehavior {
 		$return = array();
 		if(isset($this->settings[$Model->name])){
 			foreach($this->settings[$Model->name] as $field => $values){
+				$values = $this->peelValues($values);
 				if(!empty($values)){
 					foreach($values as $key => $value){
 						Dev::speek(array($key=>$value));
